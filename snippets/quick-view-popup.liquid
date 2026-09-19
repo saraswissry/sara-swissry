@@ -1,0 +1,337 @@
+{% comment %}
+  Quick View modal shell.
+  Rendered once per section via a render call for 'quick-view-popup', passing
+  linked_product, linked_option_color and linked_option_size.
+  All element ids below are read/written by assets/quick-view.js — don't rename them
+  without updating that file too.
+  Card proportions (width/height/inner spacing) follow the Figma spec:
+  outer frame 311x447, image ~116x135, options row spans full card width.
+{% endcomment %}
+
+<div
+  id="QuickViewModal"
+  class="quick-view-modal"
+  aria-hidden="true"
+  {%- if linked_product != blank -%}
+    data-linked-product-handle="{{ linked_product.handle }}"
+  {%- endif -%}
+  data-linked-option-color="{{ linked_option_color }}"
+  data-linked-option-size="{{ linked_option_size }}"
+>
+  <div class="quick-view-modal__overlay" data-quick-view-close></div>
+
+  <div class="quick-view-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="QuickViewTitle">
+    <button
+      type="button"
+      class="quick-view-modal__close"
+      data-quick-view-close
+      aria-label="Close"
+    >&times;</button>
+
+    <div class="quick-view-modal__top">
+      <div class="quick-view-modal__media">
+        <img id="QuickViewImage" class="quick-view-modal__image" alt="" width="232" height="270">
+      </div>
+
+      <div class="quick-view-modal__info">
+        <h2 id="QuickViewTitle" class="quick-view-modal__title"></h2>
+        <p id="QuickViewPrice" class="quick-view-modal__price"></p>
+        <div id="QuickViewDescription" class="quick-view-modal__description rte"></div>
+      </div>
+    </div>
+
+    <form id="QuickViewForm" class="quick-view-modal__form">
+      <div id="QuickViewOptions" class="quick-view-modal__options"></div>
+
+      <p id="QuickViewError" class="quick-view-modal__error" hidden></p>
+
+      <button type="submit" id="QuickViewAddToCart" class="quick-view-modal__submit">
+        <span data-default-text class="quick-view-modal__submit-text">
+          {{ 'products.product.add_to_cart' | t | default: 'Add to cart' }}
+          <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false">
+            <path d="M4 12h15M13 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </span>
+        <span data-loading-text class="quick-view-modal__submit-loading" hidden>
+          <span class="quick-view-spinner" aria-hidden="true"></span>
+        </span>
+      </button>
+    </form>
+  </div>
+</div>
+
+{% style %}
+  .quick-view-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: none;
+  }
+
+  .quick-view-modal.is-open {
+    display: block;
+  }
+
+  .quick-view-modal__overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+  }
+
+  /* Outer card ~311x447 in the Figma spec; scaled slightly via viewport units
+     so it still fits comfortably on very small phones. */
+  .quick-view-modal__dialog {
+    position: relative;
+    width: min(320px, 92vw);
+    max-height: 90vh;
+    overflow-y: auto;
+    margin: 5vh auto;
+    background: #ffffff;
+    padding: 1.5rem 1.25rem 1.25rem;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
+  }
+
+  .quick-view-modal__close {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    line-height: 1;
+    color: #111111;
+    cursor: pointer;
+    padding: 0;
+  }
+
+  /* Image thumbnail + title/price/description sit side by side, matching
+     the spec (image ~116x135, text column starting right after it). */
+  .quick-view-modal__top {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .quick-view-modal__media {
+    flex: 0 0 116px;
+    width: 116px;
+    height: 135px;
+  }
+
+  .quick-view-modal__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .quick-view-modal__info {
+    flex: 1;
+    min-width: 0;
+    padding-top: 0.125rem;
+  }
+
+  .quick-view-modal__title {
+    margin: 0 0 0.5rem;
+    font-size: 1rem;
+    font-weight: 500;
+    line-height: 1.2;
+    color: #111111;
+  }
+
+  .quick-view-modal__price {
+    margin: 0 0 0.5rem;
+    font-size: 1rem;
+    color: #111111;
+  }
+
+  .quick-view-modal__description {
+    margin: 0;
+    font-size: 0.8125rem;
+    line-height: 1.4;
+    color: #3a3a3a;
+  }
+
+  /* Color/Size options span the full card width, below the image+text row. */
+  .quick-view-modal__option {
+    margin-bottom: 1rem;
+  }
+
+  .quick-view-modal__option-label {
+    margin: 0 0 0.4rem;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: #111111;
+  }
+
+  .quick-view-modal__option-values {
+    display: flex;
+    border: 1px solid #d0d0d0;
+  }
+
+  /* Unselected: white background with a thin left-edge accent in the
+     swatch's own color. Selected: the whole button fills with that color. */
+  .quick-view-modal__swatch {
+    position: relative;
+    flex: 1;
+    border: none;
+    border-right: 1px solid #d0d0d0;
+    padding: 0.7rem 0.6rem 0.7rem 1.1rem;
+    font-size: 0.8125rem;
+    text-align: left;
+    color: #111111;
+    background: #ffffff;
+    cursor: pointer;
+  }
+
+  .quick-view-modal__swatch::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: var(--swatch-color, #cccccc);
+  }
+
+  .quick-view-modal__swatch:last-child {
+    border-right: none;
+  }
+
+  .quick-view-modal__swatch.is-selected {
+    background: var(--swatch-color, #cccccc);
+    color: var(--swatch-text-color, #ffffff);
+    font-weight: 600;
+    padding-left: 0.6rem;
+  }
+
+  .quick-view-modal__swatch.is-selected::before {
+    display: none;
+  }
+
+  .quick-view-modal__swatch.is-unavailable {
+    opacity: 0.35;
+    cursor: not-allowed;
+    text-decoration: line-through;
+  }
+
+  .quick-view-modal__dropdown {
+    position: relative;
+    border: 1px solid #d0d0d0;
+  }
+
+  .quick-view-modal__dropdown-trigger {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #ffffff;
+    border: none;
+    padding: 0.7rem 0.9rem;
+    font-size: 0.8125rem;
+    color: #111111;
+    cursor: pointer;
+  }
+
+  .quick-view-modal__dropdown-trigger svg {
+    transition: transform 0.15s ease;
+    flex-shrink: 0;
+  }
+
+  .quick-view-modal__dropdown.is-open .quick-view-modal__dropdown-trigger svg {
+    transform: rotate(180deg);
+  }
+
+  .quick-view-modal__dropdown-panel {
+    display: none;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 100%;
+    z-index: 2;
+    background: #ffffff;
+    border: 1px solid #d0d0d0;
+    border-top: none;
+    max-height: 180px;
+    overflow-y: auto;
+  }
+
+  .quick-view-modal__dropdown.is-open .quick-view-modal__dropdown-panel {
+    display: block;
+  }
+
+  .quick-view-modal__dropdown-option {
+    display: block;
+    width: 100%;
+    text-align: left;
+    background: none;
+    border: none;
+    padding: 0.7rem 0.9rem;
+    font-size: 0.8125rem;
+    color: #111111;
+    cursor: pointer;
+  }
+
+  .quick-view-modal__dropdown-option:hover {
+    background: #f4f4f4;
+  }
+
+  .quick-view-modal__dropdown-option.is-selected {
+    font-weight: 600;
+  }
+
+  .quick-view-modal__dropdown-option[disabled] {
+    opacity: 0.35;
+    cursor: not-allowed;
+    text-decoration: line-through;
+  }
+
+  .quick-view-modal__error {
+    color: #c0392b;
+    font-size: 0.8125rem;
+    margin: 0 0 1rem;
+  }
+
+  .quick-view-modal__submit {
+    width: 100%;
+    background: #111111;
+    color: #ffffff;
+    border: none;
+    padding: 0.85rem;
+    font-size: 0.875rem;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    cursor: pointer;
+  }
+
+  .quick-view-modal__submit.is-disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .quick-view-modal__submit-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  body.quick-view-open {
+    overflow: hidden;
+  }
+
+  @media screen and (max-width: 360px) {
+    .quick-view-modal__dialog {
+      padding: 1.25rem 1rem 1rem;
+    }
+
+    .quick-view-modal__media {
+      flex-basis: 96px;
+      width: 96px;
+      height: 112px;
+    }
+  }
+{% endstyle %}

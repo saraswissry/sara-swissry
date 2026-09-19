@@ -1,0 +1,175 @@
+{{ 'custom-product-grid.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'quick-view.js' | asset_url }}" defer="defer"></script>
+
+<section class="product-grid" id="ProductGrid-{{ section.id }}">
+  {% if section.settings.heading != blank %}
+    <p class="product-grid__heading">{{ section.settings.heading }}</p>
+  {% endif %}
+
+  <div class="product-grid__list">
+    {% for block in section.blocks %}
+      {% assign product = block.settings.product %}
+      {% if product != blank %}
+        {% assign color_option = product.options_with_values | where: 'name', 'Color' | first %}
+        {% assign accent_color = '#B20F36' %}
+        {% if color_option %}
+          {% for option_value in color_option.values %}
+            {% if option_value.swatch != blank and option_value.swatch.color != blank %}
+              {% assign accent_color = option_value.swatch.color %}
+              {% break %}
+            {% endif %}
+          {% endfor %}
+        {% endif %}
+
+        <article class="product-card" style="--product-card-accent: {{ accent_color }};" {{ block.shopify_attributes }}>
+          <div class="product-card__image-wrapper">
+            <a href="{{ product.url }}" class="product-card__image-link" aria-label="{{ product.title | escape }}">
+              {{
+                product.featured_image
+                | image_url: width: 900
+                | image_tag: loading: 'lazy', class: 'product-card__image', sizes: '(min-width: 750px) 25vw, 50vw'
+              }}
+            </a>
+
+            <button
+              type="button"
+              class="product-grid__quick-view"
+              data-quick-view-trigger
+              data-product-handle="{{ product.handle }}"
+              aria-label="Quick view {{ product.title | escape }}"
+              aria-haspopup="dialog"
+              style="left: {{ block.settings.hotspot_x }}%; top: {{ block.settings.hotspot_y }}%;"
+            >
+              <span class="product-grid__quick-view-icon" aria-hidden="true">+</span>
+            </button>
+          </div>
+
+          <div class="product-card__content">
+            <div class="product-card__meta">
+              <h3 class="product-card__title">{{ product.title }}</h3>
+              <div class="product-card__price">{{ product.selected_or_first_available_variant.price | money }}</div>
+            </div>
+
+            {% if color_option %}
+              <div class="product-card__color-options" aria-label="Available colors">
+                {% for option_value in color_option.values limit: 2 %}
+                  {% assign swatch_color = option_value.swatch.color %}
+                  {% if swatch_color == blank %}
+                    {% assign swatch_color = '#D9D9D9' %}
+                  {% endif %}
+
+                  <div class="product-card__color-option">
+                    <span class="product-card__color-swatch" style="--swatch-color: {{ swatch_color }};"></span>
+                    <span class="product-card__color-label">{{ option_value.name }}</span>
+                  </div>
+                {% endfor %}
+              </div>
+            {% endif %}
+          </div>
+        </article>
+      {% endif %}
+    {% endfor %}
+  </div>
+</section>
+
+{% render 'quick-view-popup',
+  linked_product: section.settings.linked_product,
+  linked_option_color: section.settings.linked_option_color,
+  linked_option_size: section.settings.linked_option_size
+%}
+
+{% schema %}
+{
+  "name": "Custom Product Grid",
+  "tag": "section",
+  "class": "shopify-section--custom-product-grid",
+  "settings": [
+    {
+      "type": "font_picker",
+      "id": "heading_font",
+      "label": "Font",
+      "default": "jost_n4",
+      "info": "Design uses Jost. If it isn't available in your store's font library, pick the closest match."
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Tisso vison in the wild"
+    },
+    {
+      "type": "header",
+      "content": "Linked product rule"
+    },
+    {
+      "type": "paragraph",
+      "content": "When a shopper adds a product to the cart with the color and size below selected, the linked product is automatically added as a second line item."
+    },
+    {
+      "type": "product",
+      "id": "linked_product",
+      "label": "Linked product",
+      "info": "e.g. Soft Winter Jacket"
+    },
+    {
+      "type": "text",
+      "id": "linked_option_color",
+      "label": "Triggers on color",
+      "default": "Black"
+    },
+    {
+      "type": "text",
+      "id": "linked_option_size",
+      "label": "Triggers on size",
+      "default": "Medium"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "product",
+      "name": "Product",
+      "settings": [
+        {
+          "type": "product",
+          "id": "product",
+          "label": "Product"
+        },
+        {
+          "type": "range",
+          "id": "hotspot_x",
+          "label": "Hotspot horizontal position",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "unit": "%",
+          "default": 85
+        },
+        {
+          "type": "range",
+          "id": "hotspot_y",
+          "label": "Hotspot vertical position",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "unit": "%",
+          "default": 85
+        }
+      ]
+    }
+  ],
+  "max_blocks": 6,
+  "presets": [
+    {
+      "name": "Custom Product Grid",
+      "blocks": [
+        { "type": "product" },
+        { "type": "product" },
+        { "type": "product" },
+        { "type": "product" },
+        { "type": "product" },
+        { "type": "product" }
+      ]
+    }
+  ]
+}
+{% endschema %}

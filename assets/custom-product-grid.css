@@ -1,0 +1,209 @@
+.product-grid {
+  padding: 3rem 1.5rem 4rem;
+  max-width: 90rem;
+  margin: 0 auto;
+}
+
+.product-grid__heading {
+  width: 100%;
+  max-width: 372px;
+  margin: 0 0 1.25rem;
+  font-family: var(--font-display, 'Lustria', serif);
+  font-weight: 400;
+  font-size: 2.25rem;
+  line-height: 1.2;
+  display: flex;
+  align-items: center;
+  text-align: left;
+  color: #000000;
+}
+
+.product-grid__list {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.1rem;
+}
+
+.product-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  border: 0.5px solid #000000;
+  min-height: 100%;
+}
+
+.product-card__image-wrapper {
+  position: relative;
+  width: 100%;
+  background: #ffffff;
+}
+
+.product-card__image-link {
+  display: block;
+}
+
+.product-card__image {
+  display: block;
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+  background: #f3f3f3;
+}
+
+.product-card__content {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 0.75rem;
+  padding: 0.9rem 0.85rem 1rem;
+}
+
+.product-card__meta {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.product-card__title {
+  margin: 0;
+  font-family: 'Jost', var(--font-body, sans-serif);
+  font-size: 1rem;
+  line-height: 1.2;
+  font-weight: 300;
+  letter-spacing: -0.02em;
+  color: #000000;
+  text-transform: capitalize;
+}
+
+.product-card__price {
+  font-family: 'Lustria', var(--font-display, serif);
+  font-size: 1rem;
+  line-height: 1.2;
+  color: #000000;
+  white-space: nowrap;
+}
+
+.product-card__color-options {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  flex-wrap: wrap;
+  min-height: 2.25rem;
+}
+
+.product-card__color-option {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-width: 0;
+}
+
+.product-card__color-swatch {
+  width: 2.5rem;
+  height: 1.4rem;
+  display: inline-block;
+  border: 0.5px solid #000000;
+  background: var(--swatch-color, #d9d9d9);
+  box-sizing: border-box;
+  flex-shrink: 0;
+}
+
+.product-card__color-label {
+  font-family: 'Jost', var(--font-body, sans-serif);
+  font-size: 0.9rem;
+  line-height: 1;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  color: #000000;
+  text-transform: capitalize;
+}
+
+.product-card::before {
+  content: '';
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 0.3rem;
+  background: var(--product-card-accent, #b20f36);
+}
+
+.product-grid__quick-view {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 50%;
+  border: none;
+  background: #ffffff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  font-size: 1.1rem;
+  line-height: 1;
+  color: #000000;
+  padding: 0;
+  z-index: 3;
+}
+
+.product-grid__quick-view:hover {
+  transform: translate(-50%, -50%) scale(1.1);
+}
+
+.product-grid__quick-view-icon {
+  display: block;
+  line-height: 1;
+}
+
+.quick-view-spinner {
+  display: inline-block;
+  width: 1.25rem;
+  height: 1.25rem;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: #ffffff;
+  animation: quickViewSpin 0.6s linear infinite;
+}
+
+@keyframes quickViewSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media screen and (max-width: 989px) {
+  .product-grid__list {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media screen and (max-width: 749px) {
+  .product-grid {
+    padding: 2rem 1rem;
+  }
+
+  .product-grid__heading {
+    max-width: 342px;
+    font-size: 1.5rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .product-grid__list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem;
+  }
+}
+
+@media screen and (max-width: 380px) {
+  .product-grid__heading {
+    font-size: 1.25rem;
+  }
+
+  .product-card__color-swatch {
+    width: 2rem;
+  }
+}

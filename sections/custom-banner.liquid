@@ -1,0 +1,588 @@
+<style>
+  {{ section.settings.heading_font | font_face: font_display: 'swap' }}
+
+  /* Custom Banner Main Wrapper */
+  .custom-banner {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+    max-width: 1440px;
+    margin: 0 auto;
+    overflow: hidden;
+    font-family: {{ section.settings.heading_font.family }}, {{ section.settings.heading_font.fallback_families }};
+    background: #FFFFFF;
+  }
+
+  /* 1. Top bar */
+  .custom-banner__topbar {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 50px;
+    width: 100%;
+    height: 64px;
+    background: #F5F5F5;
+    box-sizing: border-box;
+  }
+
+  .custom-banner__logo {
+    display: inline-flex;
+    align-items: center;
+    text-decoration: none;
+  }
+
+  .custom-banner__logo img {
+    height: 19px;
+    width: 120px;
+    display: block;
+    object-fit: contain;
+  }
+
+  .custom-banner__topbar-heading {
+    font-weight: 400;
+    font-size: 16px;
+    color: #000000;
+    margin: 0;
+    text-align: center;
+  }
+
+  /* Mobile menu toggle (hamburger / close icon) - hidden on desktop */
+  .custom-banner__menu-toggle {
+    display: none;
+    background: none;
+    border: none;
+    padding: 4px;
+    margin: 0;
+    cursor: pointer;
+  }
+
+  .custom-banner__menu-icon {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 4px;
+    width: 20px;
+    height: 14px;
+  }
+
+  .custom-banner__menu-bar {
+    display: block;
+    height: 2px;
+    width: 100%;
+    background: #000000;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+  }
+
+  /* 2. Hero Section (Desktop) */
+  .custom-banner__hero {
+    position: relative;
+    width: 1440px;
+    height: 780px;
+    background-image: url('https://cdn.shopify.com/s/files/1/0709/1139/3859/files/Group_1000008197.svg?v=1789718984');
+    background-size: 1440px 780px;
+    background-repeat: no-repeat;
+    background-position: top left;
+    background-color: #FFFFFF;
+    overflow: hidden;
+  }
+
+  .custom-banner__desktop-view {
+    display: block;
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
+
+  .custom-banner__mobile-view {
+    display: none;
+  }
+
+  .custom-banner__hero-content {
+    position: absolute;
+    left: 67px;
+    top: 430px;
+    width: 483px;
+    z-index: 3;
+  }
+
+  .custom-banner__heading {
+    font-weight: 500;
+    font-size: 70px;
+    line-height: 100%;
+    color: #000000;
+    margin: 0 0 15px 0;
+  }
+
+  .custom-banner__subheading {
+    font-weight: 400;
+    font-size: 20px;
+    line-height: 140%;
+    color: #000000;
+    margin-bottom: 25px;
+  }
+
+  .custom-banner__subheading p {
+    margin: 0;
+  }
+
+  /* Pill Buttons & Left-to-Right Hover Animation */
+  .custom-banner__pill-button {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 20px;
+    text-decoration: none;
+    text-transform: uppercase;
+    font-size: 16px;
+    font-weight: 400;
+    border-radius: 0px;
+    overflow: hidden;
+    box-sizing: border-box;
+    transition: color 0.4s ease;
+  }
+
+  /* Yellow Button (Top bar) */
+  .custom-banner__pill-button--yellow {
+    background: #FFF544;
+    color: #000000;
+    width: 207px;
+    height: 44px;
+  }
+
+  .custom-banner__pill-button--yellow .custom-banner__pill-button-fill {
+    background: #000000;
+  }
+
+  .custom-banner__pill-button--yellow:hover .custom-banner__pill-button-fill,
+  .custom-banner__pill-button--yellow:active .custom-banner__pill-button-fill {
+    transform: translateX(0);
+  }
+
+  .custom-banner__pill-button--yellow:hover,
+  .custom-banner__pill-button--yellow:active {
+    color: #FFFFFF;
+  }
+
+  /* Black Button (Hero) */
+  .custom-banner__pill-button--black {
+    background: #000000;
+    color: #F5F5F5;
+    width: 193px;
+    height: 45px;
+  }
+
+  .custom-banner__pill-button--black .custom-banner__pill-button-fill {
+    background: #F5F5F5;
+  }
+
+  .custom-banner__pill-button--black:hover .custom-banner__pill-button-fill,
+  .custom-banner__pill-button--black:active .custom-banner__pill-button-fill {
+    transform: translateX(0);
+  }
+
+  .custom-banner__pill-button--black:hover,
+  .custom-banner__pill-button--black:active {
+    color: #000000;
+  }
+
+  .custom-banner__pill-button-fill {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    transform: translateX(-100%);
+    transition: transform 0.4s cubic-bezier(0.77, 0, 0.175, 1);
+    z-index: 1;
+  }
+
+  .custom-banner__pill-button-label {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    gap: 10px;
+  }
+
+  /* Arrow: line sits flush against the arrowhead, no visible gap */
+  .custom-banner__arrow-wrapper {
+    display: inline-flex;
+    align-items: center;
+    gap: 0;
+  }
+
+  .custom-banner__arrow-line {
+    display: inline-block;
+    width: 24px;
+    height: 1.5px;
+    background-color: currentColor;
+    transition: background-color 0.4s ease;
+  }
+
+  .custom-banner__arrow-head {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-top: 1.5px solid currentColor;
+    border-right: 1.5px solid currentColor;
+    transform: rotate(45deg);
+    margin-left: -4px; /* pulls the arrowhead tight against the line's end */
+    transition: border-color 0.4s ease;
+  }
+
+  /* 3. Tagline Strip */
+  .custom-banner__tagline {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    padding: 10px 50px;
+    width: 100%;
+    max-width: 1440px;
+    min-height: 34px;
+    background: #F5F5F5;
+    box-sizing: border-box;
+  }
+
+  .custom-banner__tagline p {
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 13px;
+    text-align: center;
+    text-transform: uppercase;
+    color: #000000;
+    margin: 0;
+  }
+
+  /* Responsive Styles for Mobile (375px & Exact Mobile Background Specs) */
+  @media screen and (max-width: 768px) {
+    .custom-banner__topbar {
+      flex-wrap: wrap;
+      height: auto;
+      padding: 15px 20px;
+      position: relative;
+    }
+
+    /* Component 189: hamburger left, logo centered; heading + yellow
+       button are hidden until the menu is toggled open. */
+    .custom-banner__menu-toggle {
+      display: inline-flex;
+      align-items: center;
+      order: 0;
+    }
+
+    .custom-banner__logo {
+      order: 1;
+      margin: 0 auto;
+    }
+
+    .custom-banner__topbar-heading {
+      display: none;
+      order: 3;
+      flex-basis: 100%;
+      text-align: center;
+      margin-top: 15px;
+    }
+
+    .custom-banner__topbar .custom-banner__pill-button--yellow {
+      display: none;
+      order: 4;
+      margin: 15px auto 0;
+    }
+
+    .custom-banner__topbar.is-menu-open .custom-banner__topbar-heading,
+    .custom-banner__topbar.is-menu-open .custom-banner__pill-button--yellow {
+      display: flex;
+    }
+
+    /* Hamburger -> X animation when the menu is open */
+    .custom-banner__topbar.is-menu-open .custom-banner__menu-bar:nth-child(1) {
+      transform: translateY(6px) rotate(45deg);
+    }
+    .custom-banner__topbar.is-menu-open .custom-banner__menu-bar:nth-child(2) {
+      opacity: 0;
+    }
+    .custom-banner__topbar.is-menu-open .custom-banner__menu-bar:nth-child(3) {
+      transform: translateY(-6px) rotate(-45deg);
+    }
+
+    .custom-banner__desktop-view {
+      display: none;
+    }
+
+    .custom-banner__mobile-view {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      width: 375.44px;
+      max-width: 100%;
+      min-height: 520px;
+      padding: 0;
+      margin: 0 auto;
+      box-sizing: border-box;
+      background-image: url('https://cdn.shopify.com/s/files/1/0709/1139/3859/files/Frame_1958_1.svg?v=1789719467');
+      background-size: 686px 264px;
+      background-repeat: no-repeat;
+      background-position: -140px 157px;
+      background-color: #FFFFFF;
+    }
+
+    .custom-banner__hero {
+      width: 100% !important;
+      height: auto !important;
+      background: none !important;
+    }
+
+    .custom-banner__mobile-view .custom-banner__hero-content {
+      position: relative !important;
+      left: 0 !important;
+      top: 0 !important;
+      width: 100% !important;
+      max-width: 100% !important;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 49px 16px 0 16px;
+      box-sizing: border-box;
+    }
+
+    .custom-banner__mobile-view .custom-banner__heading {
+      font-size: 30px !important;
+      width: 197px;
+      height: 30px;
+      margin-bottom: 24px !important;
+    }
+
+    .custom-banner__mobile-view .custom-banner__subheading {
+      width: 340px;
+      max-width: 100%;
+      height: 42px;
+      font-size: 16px !important;
+      line-height: 130% !important;
+      margin-bottom: 192px !important;
+      text-align: center;
+    }
+
+    .custom-banner__mobile-view .custom-banner__pill-button--black {
+      position: absolute !important;
+      top: 337px !important;
+      left: calc(50% - 193px/2 - 0.22px) !important;
+      width: 193px !important;
+      height: 45px !important;
+    }
+
+    .custom-banner__tagline {
+      width: 375px;
+      max-width: 100%;
+      height: 34px;
+      padding: 10px 50px;
+    }
+
+    .custom-banner__tagline p {
+      font-size: 14px;
+    }
+  }
+</style>
+
+<script src="{{ 'custom-banner.js' | asset_url }}" defer="defer"></script>
+
+<section class="custom-banner">
+
+  <div class="custom-banner__topbar" id="CustomBannerTopbar-{{ section.id }}">
+    <button
+      type="button"
+      class="custom-banner__menu-toggle"
+      data-menu-toggle
+      aria-expanded="false"
+      aria-controls="CustomBannerTopbar-{{ section.id }}"
+      aria-label="Toggle menu"
+    >
+      <span class="custom-banner__menu-icon" aria-hidden="true">
+        <span class="custom-banner__menu-bar"></span>
+        <span class="custom-banner__menu-bar"></span>
+        <span class="custom-banner__menu-bar"></span>
+      </span>
+    </button>
+
+    <a href="{{ shop.url }}" class="custom-banner__logo">
+      {%- if section.settings.logo != blank -%}
+        {{ section.settings.logo | image_url: width: 300 | image_tag: loading: 'lazy', width: 120, height: 19, alt: shop.name }}
+      {%- else -%}
+        <img src="https://cdn.shopify.com/s/files/1/0709/1139/3859/files/Group_1000007777_1.svg?v=1789718967" alt="Logo" width="120" height="19">
+      {%- endif -%}
+    </a>
+
+    {% if section.settings.topbar_heading != blank %}
+      <p class="custom-banner__topbar-heading">{{ section.settings.topbar_heading }}</p>
+    {% endif %}
+
+    {% if section.settings.topbar_button_text != blank %}
+      <a href="{{ section.settings.topbar_button_link | default: '#' }}"
+        class="custom-banner__pill-button custom-banner__pill-button--yellow"
+      >
+        <span class="custom-banner__pill-button-fill" aria-hidden="true"></span>
+        <span class="custom-banner__pill-button-label">
+          {{ section.settings.topbar_button_text }}
+          <span class="custom-banner__arrow-wrapper" aria-hidden="true">
+            <span class="custom-banner__arrow-line"></span>
+            <span class="custom-banner__arrow-head"></span>
+          </span>
+        </span>
+      </a>
+    {% endif %}
+  </div>
+
+  <div class="custom-banner__hero">
+    <div class="custom-banner__desktop-view">
+      <div class="custom-banner__hero-content">
+        {% if section.settings.heading != blank %}
+          <h2 class="custom-banner__heading">{{ section.settings.heading }}</h2>
+        {% endif %}
+
+        {% if section.settings.subheading != blank %}
+          <div class="custom-banner__subheading">{{ section.settings.subheading }}</div>
+        {% endif %}
+
+        {% if section.settings.button_text != blank %}
+          <a href="{{ section.settings.button_link | default: '#' }}"
+            class="custom-banner__pill-button custom-banner__pill-button--black"
+          >
+            <span class="custom-banner__pill-button-fill" aria-hidden="true"></span>
+            <span class="custom-banner__pill-button-label">
+              {{ section.settings.button_text }}
+              <span class="custom-banner__arrow-wrapper" aria-hidden="true">
+                <span class="custom-banner__arrow-line"></span>
+                <span class="custom-banner__arrow-head"></span>
+              </span>
+            </span>
+          </a>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="custom-banner__mobile-view">
+      <div class="custom-banner__hero-content">
+        {% if section.settings.heading != blank %}
+          <h2 class="custom-banner__heading">{{ section.settings.heading }}</h2>
+        {% endif %}
+
+        {% if section.settings.subheading != blank %}
+          <div class="custom-banner__subheading">{{ section.settings.subheading }}</div>
+        {% endif %}
+
+        {% if section.settings.button_text != blank %}
+          <a href="{{ section.settings.button_link | default: '#' }}"
+            class="custom-banner__pill-button custom-banner__pill-button--black"
+          >
+            <span class="custom-banner__pill-button-fill" aria-hidden="true"></span>
+            <span class="custom-banner__pill-button-label">
+              {{ section.settings.button_text }}
+              <span class="custom-banner__arrow-wrapper" aria-hidden="true">
+                <span class="custom-banner__arrow-line"></span>
+                <span class="custom-banner__arrow-head"></span>
+              </span>
+            </span>
+          </a>
+        {% endif %}
+      </div>
+    </div>
+
+  </div>
+
+  {% if section.settings.tagline != blank %}
+    <div class="custom-banner__tagline">
+      <p>{{ section.settings.tagline }}</p>
+    </div>
+  {% endif %}
+</section>
+
+{% schema %}
+{
+  "name": "Custom Banner",
+  "tag": "section",
+  "class": "shopify-section--custom-banner",
+  "settings": [
+    {
+      "type": "font_picker",
+      "id": "heading_font",
+      "label": "Font",
+      "default": "jost_n4",
+      "info": "Design uses Jost."
+    },
+    {
+      "type": "header",
+      "content": "Top bar"
+    },
+    {
+      "type": "image_picker",
+      "id": "logo",
+      "label": "Logo Image"
+    },
+    {
+      "type": "text",
+      "id": "topbar_heading",
+      "label": "Top bar heading",
+      "default": "Find the ideal gift for your loved ones."
+    },
+    {
+      "type": "text",
+      "id": "topbar_button_text",
+      "label": "Top bar button text",
+      "default": "Choose Gift"
+    },
+    {
+      "type": "url",
+      "id": "topbar_button_link",
+      "label": "Top bar button link"
+    },
+    {
+      "type": "header",
+      "content": "Hero (Desktop & Mobile)"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "The Gift Guide"
+    },
+    {
+      "type": "richtext",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "<p>Discover Joy: Your Ultimate Holiday Gift Destination. Explore our curated selection and find the perfect gifts to delight your loved ones this holiday season.</p>"
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "Button text",
+      "default": "Shop Now"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Button link"
+    },
+    {
+      "type": "header",
+      "content": "Tagline strip"
+    },
+    {
+      "type": "text",
+      "id": "tagline",
+      "label": "Tagline text",
+      "default": "SUSTAINABLE, ETHICALLY MADE ACTIVEWEAR"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Custom Banner"
+    }
+  ]
+}
+{% endschema %}
