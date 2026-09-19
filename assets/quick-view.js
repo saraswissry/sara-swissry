@@ -357,24 +357,47 @@
 
   // Builds the line items to submit, applying the linked-product rule when
   // the shopper's selection matches the configured trigger (color + size).
+  function getOptionIndexByName(optionName) {
+    if (!currentProduct || !Array.isArray(currentProduct.options)) return -1;
+
+    return currentProduct.options.findIndex(function (rawOptionName) {
+      return getOptionName(rawOptionName).toLowerCase() === optionName.toLowerCase();
+    });
+  }
+
   function buildCartItems(variant) {
     var items = [{ id: variant.id, quantity: 1 }];
 
-    var matchesColor = selectedOptions.some(function (value) {
-      return value && value.toLowerCase() === linkedRule.color;
-    });
-    var matchesSize = selectedOptions.some(function (value) {
-      return value && value.toLowerCase() === linkedRule.size;
-    });
+    var colorIndex = getOptionIndexByName('Color');
+    var sizeIndex = getOptionIndexByName('Size');
+    var selectedColor = colorIndex >= 0 && selectedOptions[colorIndex] ? selectedOptions[colorIndex].toLowerCase() : '';
+    var selectedSize = sizeIndex >= 0 && selectedOptions[sizeIndex] ? selectedOptions[sizeIndex].toLowerCase() : '';
 
-    if (!linkedRule.productHandle || !matchesColor || !matchesSize) {
+    var shouldAutoAddLinkedProduct =
+      !!linkedRule.productHandle &&
+      !!linkedRule.color &&
+      !!linkedRule.size &&
+      selectedColor === linkedRule.color &&
+      selectedSize === linkedRule.size;
+
+    if (!shouldAutoAddLinkedProduct) {
       return Promise.resolve(items);
     }
 
     return getLinkedProduct().then(function (linkedProduct) {
-      if (!linkedProduct) return items;
+      if (!linkedProduct || !Array.isArray(linkedProduct.variants) || linkedProduct.variants.length === 0) {
+        return items;
+      }
+
       var linkedVariant =
-        linkedProduct.variants.find(function (v) { return v.available; }) || linkedProduct.variants[0];
+        linkedProduct.variants.find(function (v) {
+          return v.available;
+        }) || linkedProduct.variants[0];
+
+      if (!linkedVariant || !linkedVariant.id) {
+        return items;
+      }
+
       items.push({ id: linkedVariant.id, quantity: 1 });
       return items;
     });
